@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "ofdapp"
+  namespace: "default"
+  labels:
+    app: "ofdapp"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "ofdapp"
+  template:
+    metadata:
+      labels:
+        app: "ofdapp"
+    spec:
+      containers:
+      - name: "ofdproject-sha256-1"
+        image: "gcr.io/gcpdemo-334906/github.com/jyothipedakotla499/ofdproject@sha256:232e5f908727fe0dc5e51275560f2fe44ee324058c34c79485a67e58f65aaf71"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "ofdapp-hpa-orfo"
+  namespace: "default"
+  labels:
+    app: "ofdapp"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "ofdapp"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
